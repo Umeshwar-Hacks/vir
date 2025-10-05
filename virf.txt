@@ -96,6 +96,23 @@ Stop-VM -Name <vmname>              # stop VM
 # ===== Linux Network Bridge Setup =====
 ip a                                # list interfaces
 sudo nano /etc/network/interfaces   # edit network config
+######################
+#Loopback Interface
+auto lo
+iface lo inet loopback
+# Physical Interface to be used in Bridge
+allow-hotplug enpos3
+iface enpos3 inet manual
+#Bridge Interface
+auto br-cloud
+iface br-cloud inet static
+address 10.0.2.20
+netmask 255.255.255.0
+gateway 10.0.2.2
+bridge_ports enp0s3
+
+######################
+
 sudo systemctl restart networking   # restart network
 sudo brctl addbr br-cloud           # create bridge
 sudo brctl addif br-cloud enp0s3    # add interface
@@ -112,3 +129,4 @@ diskmgmt.msc                      # open disk management
 # Initialize disk, format NTFS
 # Copy VHD to target machine
 # Attach VHD on new machine
+
