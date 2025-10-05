@@ -130,3 +130,48 @@ diskmgmt.msc                      # open disk management
 # Copy VHD to target machine
 # Attach VHD on new machine
 
+#=========Openstack=========
+# ===== MicroStack / OpenStack Setup =====
+sudo apt update && sudo apt upgrade -y             # update system
+sudo snap install microstack --classic --edge      # install MicroStack (--edge if --classic not available)
+sudo microstack init --auto --control               # initialize as control node (single-node)
+
+# Check OpenStack endpoints
+microstack.openstack endpoint list                  # list service endpoints
+
+# Get Ubuntu VM IP (to access dashboard)
+ip a                                                 # check IP, look for inet addr
+
+# Get admin credentials for CLI
+sudo cat /var/snap/microstack/common/etc/microstack.rc  # view admin user, project, password
+
+# Source credentials for CLI commands
+source /var/snap/microstack/common/etc/microstack.rc
+
+# Create SSH key pair (do on dashboard or possible CLI)
+# Go to: Project > Compute > Key Pairs (web dashboard step)
+# Save private key to local machine (.pem file)
+
+# Upload Image (Ubuntu Cloud Image)
+wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -O ubuntu-22.04.img
+
+# Upload image to OpenStack
+microstack.openstack image create --file ubuntu-22.04.img --disk-format qcow2 --container-format bare --public --project demo ubuntu-22.04
+
+# Check uploaded images
+microstack.openstack image list
+
+# Launch VM instance via CLI (replace 'busa-key' with your keypair)
+microstack.openstack server create \
+  --flavor m1.small \
+  --image "ubuntu-22.04" \
+  --network external \
+  --key-name busa-key \
+  my-first-instance
+
+# Access Horizon Dashboard via https://<VM-IP>
+# Use username 'admin' and password from microstack.rc file
+
+
+
+
