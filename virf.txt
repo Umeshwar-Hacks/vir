@@ -175,10 +175,14 @@ sudo microstack init --auto --control               # initialize as control node
 # Check OpenStack endpoints
 microstack.openstack endpoint list                  # list service endpoints
 
+microstack.openstack dashboard url
+(or)
 # Get Ubuntu VM IP (to access dashboard)
 ip a                                                 # check IP, look for inet addr
 
 # Get admin credentials for CLI
+sudo snap get microstack config.credentials.password
+(or)
 sudo cat /var/snap/microstack/common/etc/microstack.rc  # view admin user, project, password
 
 # Source credentials for CLI commands
@@ -189,24 +193,35 @@ source /var/snap/microstack/common/etc/microstack.rc
 # Save private key to local machine (.pem file)
 
 # Upload Image (Ubuntu Cloud Image)
+Project > Compute > Images-> Create Image (Fill Name: ubuntu-22.04 Image Source: URL or file Format: QCOW2)
+(or)
 wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -O ubuntu-22.04.img
 
 # Upload image to OpenStack
-microstack.openstack image create --file ubuntu-22.04.img --disk-format qcow2 --container-format bare --public --project demo ubuntu-22.04
+sudo microstack.openstack image create \
+--file /var/snap/microstack/common/ubuntu-22.04.img \
+--disk-format qcow2 \
+--container-format bare \
+--public \
+"Ubuntu-22.04"
 
 # Check uploaded images
 microstack.openstack image list
+(or)
+Project > Compute > Images
 
 # Launch VM instance via CLI (replace 'busa-key' with your keypair)
 microstack.openstack server create \
   --flavor m1.small \
   --image "ubuntu-22.04" \
   --network external \
-  --key-name busa-key \
+  --key-name busa-key \ 
   my-first-instance
+#give key name(busa-key) correctly
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
