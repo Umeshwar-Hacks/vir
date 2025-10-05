@@ -91,22 +91,43 @@ nodeinfo
 Download image from here- https://download.cirros-cloud.net/0.5.1/
 
 # ===== KVM Image Create/Resize =====
-qemu-img create -f qcow2 <file>.qcow2 10G        # create disk image
-sudo qemu-img resize <file>.qcow2 10G            # resize image
-sudo growpart /dev/sda 1                          # resize partition in VM
+New-> local install media->browse and select iso
+https://releases.ubuntu.com/16.04/- iso download
+browse and select iso->configure memory(2048) and cpu(1)
+qemu-img create -f qcow2 ubuntu_vm.qcow2 10G        # create disk image
+Configure storage->finish setting vm
+Start  the VM and installation of OS goes
+sudo qemu-img resize ubuntu_vm.qcow2 10G            # resize image
+sudo growpart /dev/sda1                          # resize partition in VM
 sudo resize2fs /dev/sda1                          # resize filesystem
-qemu-img convert -O vhd <src.qcow2> <dest.vhd>   # convert image format
+qemu-img convert -O vdi ubuntu_vm.qcow2 ubuntu_vm.vdi -p   # convert image format
+qemu-img convert -O vpc ubuntu_vm.qcow2 ubuntu_vm.vhd -p 
+qemu-img convert -O raw ubuntu_vm.qcow2 ubuntu_vm.img -p 
+
+
 
 # ===== VirtualBox File Sharing Setup =====
-# Define shared folder in VM settings
-sudo sh /media/$USER/VBox_GAs_<ver>/VBoxLinuxAdditions.run    # install guest additions
+# Define shared folder in VM settings->Shared Folders(Auto-mount)
+(for both VMs)Start VM.... Devices->Insert Guest additions CD image
+sudo sh /media/$USER/VBox_GAs_<ver>/VBoxLinuxAdditions.run (if error)    # install guest additions
+sudo sh /media/tce/VBox_GAs_6.1.26/VBoxLinuxAdditions.run
+sudo apt install build-essential dkms perl
+sudo reboot
+once started
+cd /media/sf_ShareFile
 sudo usermod -aG vboxsf $USER                                 # add user to shared folder group
+sudo usermod -aG vboxsf tce
+nano file.txt
 
 # ===== Windows Hyper-V =====
 # Server Manager: add role Hyper-V
 # Create virtual switch
-Start-VM -Name <vmname>             # start VM via PowerShell
-Stop-VM -Name <vmname>              # stop VM
+#Powershell
+New-VM -Name "tcevm" -MemoryStartupBytes 2GB -NewVHDPath "D:\tcevm.vhdx" -NewVHDSizeBytes 60GB -Path "D:\"
+Connect-VMNetworkAdapter -VMName "tcevm" -SwitchName "Intel(R) Ethernet Connection (2) I219-LM - Virtual Switch"
+Set-VMDvdDrive -VMName "tcevm" -Path "C:\ubuntu-18.84-desktop-amd64.iso"
+Get-VM             # start VM via PowerShell
+Stop-VM -Name "tcevm"              # stop VM
 
 # ===== Linux Network Bridge Setup =====
 ip a                                # list interfaces
@@ -186,6 +207,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
