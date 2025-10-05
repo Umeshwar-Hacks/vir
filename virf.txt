@@ -1,0 +1,114 @@
+# ===== Basic Linux =====
+ls                      # list files
+cd <dir>                # change directory
+pwd                     # show current directory
+mkdir <dir>             # create directory
+rmdir <dir>             # remove empty directory
+rm <file/dir>           # remove file or dir
+touch <file>            # create empty file
+cp <src> <dest>         # copy files/folders
+mv <src> <dest>         # move/rename files/folders
+cat <file>              # view file content
+nano <file>             # edit file in terminal
+grep <pattern> <file>   # search pattern in file
+find . -name <file>     # find file by name
+df -h                   # disk space usage
+du -sh <dir>            # directory size
+chmod 755 <file>        # change file permissions
+chown user:group <file> # change owner/group
+mount <device> <dir>    # mount filesystem
+umount <dir>            # unmount filesystem
+ping <host>             # ping test
+ifconfig                # show network interfaces
+ip a                    # modern network interface list
+netstat -tuln           # list tcp/udp sockets
+ss -tuln                # modern netstat
+wget <url>              # download file
+curl -O <url>           # download file
+ssh user@host           # remote shell login
+scp user@host:file .    # copy remote file
+rsync -avz src dest     # sync files/directories
+ps aux                  # list running processes
+top                     # monitor processes
+htop                    # interactive process monitor
+kill <pid>              # kill process by pid
+killall <procname>      # kill process by name
+uptime                  # system uptime
+free -h                 # memory info
+systemctl status <svc>  # check service status
+journalctl -xe          # view system logs
+
+# ===== VirtualBox VM Creation GUI =====
+# Open VirtualBox GUI
+# New VM, Linux type, Ubuntu64
+# Set RAM 2048MB
+# Create disk VDI dynamic 20GB
+# Start VM, install OS
+# Configure network: Bridged Adapter
+# Inside VM:
+ip a                    # check IP
+ping <host>             # test network
+
+# ===== Cold Migration VM =====
+# In VirtualBox:
+# Start VM and run test program
+# Shutdown VM
+# Export VM (right-click > Export to OCI)
+# Copy export to new machine
+# Import VM (File > Import Appliance)
+# Start VM, test program run again
+
+# ===== Citrix XenServer =====
+# Download ISO
+# Create bootable USB/DVD
+# Boot installation media
+# Follow GUI installer
+# Configure network, root password
+# Finish and reboot
+
+# ===== KVM Installation & Config =====
+egrep -c '(vmx|svm)' /proc/cpuinfo      # check virtualization support
+egrep -c 'lm' /proc/cpuinfo             # check 64-bit CPU
+uname -a                               # system info
+sudo apt update
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager qemu-system
+sudo systemctl restart libvirtd
+virsh list --all                       # list virtual machines
+
+# ===== KVM Image Create/Resize =====
+qemu-img create -f qcow2 <file>.qcow2 10G        # create disk image
+sudo qemu-img resize <file>.qcow2 10G            # resize image
+sudo growpart /dev/sda 1                          # resize partition in VM
+sudo resize2fs /dev/sda1                          # resize filesystem
+qemu-img convert -O vhd <src.qcow2> <dest.vhd>   # convert image format
+
+# ===== VirtualBox File Sharing Setup =====
+# Define shared folder in VM settings
+sudo sh /media/$USER/VBox_GAs_<ver>/VBoxLinuxAdditions.run    # install guest additions
+sudo usermod -aG vboxsf $USER                                 # add user to shared folder group
+
+# ===== Windows Hyper-V =====
+# Server Manager: add role Hyper-V
+# Create virtual switch
+Start-VM -Name <vmname>             # start VM via PowerShell
+Stop-VM -Name <vmname>              # stop VM
+
+# ===== Linux Network Bridge Setup =====
+ip a                                # list interfaces
+sudo nano /etc/network/interfaces   # edit network config
+sudo systemctl restart networking   # restart network
+sudo brctl addbr br-cloud           # create bridge
+sudo brctl addif br-cloud enp0s3    # add interface
+sudo ifconfig enp0s3 0              # remove IP from NIC
+sudo ifconfig br-cloud 10.0.2.20 netmask 255.255.255.0   # set bridge IP
+sudo route add default gw 10.0.2.2 dev br-cloud           # set gateway
+sudo ip link set br-cloud up         # activate bridge
+brctl show                        # show bridge info
+ip a                              # verify interfaces
+
+# ===== Create & Mount Windows VHD =====
+diskmgmt.msc                      # open disk management
+# Create VHD > set size and type
+# Initialize disk, format NTFS
+# Copy VHD to target machine
+# Attach VHD on new machine
