@@ -119,6 +119,106 @@ sudo usermod -aG vboxsf $USER                                 # add user to shar
 sudo usermod -aG vboxsf tce
 nano file.txt
 
+##############################################################################################3
+# ========== Exp-6: FTP Transfer ==========
+sudo apt update                        # update package list
+sudo apt install vsftpd                # install FTP server
+sudo nano /etc/vsftpd.conf             # edit FTP config
+# Set in config: listen=YES, write_enable=YES, pasv_enable=YES, pasv_min_port=40000, pasv_max_port=40100
+# Uncomment: chroot_local_user=YES
+# Set: listen_ipv6=NO
+
+sudo adduser ftpuser                   # create user ftpuser
+
+mkdir /home/ftpuser/uploads            # uploads folder
+sudo chown ftpuser:ftpuser /home/ftpuser/uploads  # correct ownership
+
+sudo ufw allow ftp                     # allow FTP in firewall
+sudo ufw enable                        # enable firewall
+
+sudo systemctl reload vsftpd           # reload config
+sudo systemctl enable vsftpd           # auto start ftp
+sudo systemctl status vsftpd           # check status
+
+su - ftpuser                           # login as ftpuser
+cd uploads                             # change to uploads dir
+nano myfile.txt                        # create test file
+
+# On client VM:
+ftp <ftp_server_ip>                    # connect ftp
+# login as ftpuser
+cd uploads                             # go to upload dir
+get myfile.txt                         # download file
+put yourfile.txt                       # upload file
+
+# Server VM:
+ls /home/ftpuser/uploads               # verify files
+
+# ========== Vexp5b: Python HTTPS server transfer ==========
+sudo apt install openssl -y            # install openssl
+
+mkdir ~/https_share                    # make share dir
+cd ~/https_share                       # move to share dir
+
+openssl req -new -x509 -keyout server.pem -out server.pem -days 365 -nodes  # self-signed cert
+
+nano filet.txt                         # make test file
+
+# Write python server
+nano https_server.py                   # edit https server
+# (Insert provided python code using http.server and ssl)
+
+python3 https_server.py                # start https server
+
+# On client VM:
+curl -k https://<VM1_ip>:8443/filet.txt      # download test file
+
+# ========== Vexp5_148: SSH + NFS/Network File Shares ==========
+# --- SSH Transfer ---
+sudo apt update                        # update
+sudo apt install openssh-server        # install ssh server
+sudo systemctl enable ssh              # enable sshd
+sudo systemctl start ssh               # start sshd
+sudo systemctl status ssh              # check ssh status
+
+ifconfig                               # get ip addresses
+
+# On one VM:
+ping <other_vm_ip>                     # test network
+
+# SCP (file transfer over SSH)
+scp <src_file> user@<dest_ip>:<dest_folder>   # send file
+scp user@<src_ip>:<src_file> <local_folder>   # receive file
+
+# --- NFS File Share ---
+sudo apt update                        # update
+sudo apt install nfs-kernel-server     # install NFS server
+sudo apt install nfs-common            # NFS client tools
+
+sudo mkdir /srv/nfs_share              # make shared dir
+sudo chown nobody:nogroup /srv/nfs_share     # set permissions
+
+echo "/srv/nfs_share <client_ip>(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports # export share
+sudo exportfs -ra                      # reload exports
+sudo systemctl restart nfs-kernel-server  # restart NFS
+
+sudo ufw allow from <client_ip> to any port nfs  # allow NFS
+sudo ufw enable                        # ensure firewall is on
+
+# On client:
+sudo apt update                        # update
+sudo apt install nfs-common            # install NFS tools
+sudo mount <server_ip>:/srv/nfs_share <mount_dir> # mount export
+
+# Test file copy:
+cp <file> <mount_dir>                  # copy to share
+ls <mount_dir>                         # list files
+
+# Unmount after use:
+sudo umount <mount_dir>                # unmount export
+
+################################################################################
+
 # ===== Windows Hyper-V =====
 # Server Manager: add role Hyper-V
 # Create virtual switch
@@ -221,6 +321,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
