@@ -290,3 +290,125 @@ Ctrl+Shift+Esc, Task Manager
 # Use app whitelisting, user training
 # Reset all network/VM customizations post-lab
 
+================== Ex no 6======================================================================
+
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def text_to_bin(text: str) -> str:
+    """Convert string to a binary string (8 bits per char)."""
+    return ''.join(format(ord(c), '08b') for c in text)
+
+
+def bin_to_text(binary: str) -> str:
+    """Convert binary string to text, ignoring null chars."""
+    chars = [binary[i:i+8] for i in range(0, len(binary), 8)]
+    return ''.join(chr(int(c, 2)) for c in chars if len(c) == 8 and int(c, 2) != 0)
+
+
+def embed_text(image_path: str, secret_text: str, output_path: str) -> str:
+    """Embed secret_text into the image at image_path and save to output_path."""
+    img = Image.open(image_path).convert("RGB")
+    arr = np.array(img, dtype=np.uint8)
+
+    stop_marker = "~~~~"  # marker for end-of-message
+    binary_secret = text_to_bin(secret_text + stop_marker)
+
+    flat = arr.flatten()
+
+    if len(binary_secret) > len(flat):
+        raise ValueError("Message too long for this image!")
+
+    # FIX: cast each pixel to int before bit ops, then back to uint8
+    for i, bit in enumerate(binary_secret):
+        val = int(flat[i])             # normal int
+        val = (val & ~1) | int(bit)    # clear LSB, set bit
+        flat[i] = np.uint8(val)        # back to uint8
+
+    arr = flat.reshape(arr.shape)
+    stego_img = Image.fromarray(arr.astype("uint8"), "RGB")
+    stego_img.save(output_path, format="PNG")
+    print(f"[+] Message embedded in {output_path}")
+    return output_path
+
+
+def extract_text(stego_image_path: str) -> str:
+    """Extract hidden text from a stego image."""
+    img = Image.open(stego_image_path).convert("RGB")
+    arr = np.array(img, dtype=np.uint8)
+    flat = arr.flatten()
+
+    bits = []
+    for i in range(len(flat)):
+        bits.append(str(flat[i] & 1))
+        # check decoded text for stop marker after enough bits
+        if len(bits) >= 32:  # at least 4 chars marker
+            decoded = bin_to_text(''.join(bits))
+            if decoded.endswith("~~~~"):
+                return decoded[:-4]
+    return bin_to_text(''.join(bits))
+
+
+def detect_stego(image_path: str) -> str:
+    """Simple heuristic to check for possible stego content by LSB distribution."""
+    img = Image.open(image_path).convert("RGB")
+    arr = np.array(img, dtype=np.uint8).flatten()
+    lsb_bits = arr & 1
+    ones = int(np.sum(lsb_bits))
+    zeros = len(lsb_bits) - ones
+    ratio = ones / (zeros + ones) if (zeros + ones) else 0
+    print(f"[Analysis] LSB distribution -> Ones: {ones}, Zeros: {zeros}, Ratio: {ratio:.3f}")
+    if abs(ratio - 0.5) < 0.05:
+        return "Possible stego content detected!"
+    else:
+        return "Likely a clean (non-stego) image."
+
+
+def show_images(original_path: str, stego_path: str) -> None:
+    """Display original and stego images side by side."""
+    orig = Image.open(original_path).convert("RGB")
+    stego = Image.open(stego_path).convert("RGB")
+    plt.figure(figsize=(10, 5))
+    plt.subplot(1, 2, 1)
+    plt.imshow(orig)
+    plt.title("Original Image")
+    plt.axis("off")
+    plt.subplot(1, 2, 2)
+    plt.imshow(stego)
+    plt.title("Stego Image")
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
+
+
+if __name__ == "__main__":
+    original = "1.png"   # large PNG
+    secret = (
+        "Ethical hacking is the authorized practice of probing systems for "
+        "vulnerabilities to improve security and prevent malicious attacks. "
+        "It is a key component of modern cybersecurity programs, helping "
+        "organizations understand their weaknesses before malicious hackers "
+        "do. By embedding this long paragraph we demonstrate the ability of "
+        "LSB steganography to conceal substantial amounts of data inside an "
+        "image. With a sufficiently large image, entire chapters of text, "
+        "configuration files, or small documents can be hidden in plain sight "
+        "without visible changes to the picture itself. This test paragraph "
+        "continues for several more sentences to simulate a realistic, long "
+        "secret message. The Python script will split it into bits and "
+        "embed each bit into the least significant bits of the cover image."
+        "This is done by Umeshwar from Thiagarajar College of Engineering. "
+    )
+    stego = "stego_output.png"
+
+    embed_text(original, secret, stego)
+    show_images(original, stego)
+    message = extract_text(stego)
+    print("[+] Extracted Message:", message)
+    print("[*] Analysis on original image:", detect_stego(original))
+    print("[*] Analysis on stego image:", detect_stego(stego))
+
+
+
+
