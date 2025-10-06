@@ -205,14 +205,17 @@ sudo apt update                        # update
 sudo apt install nfs-kernel-server     # install NFS server
 sudo apt install nfs-common            # NFS client tools
 
-sudo mkdir /srv/nfs_share              # make shared dir
-sudo chown nobody:nogroup /srv/nfs_share     # set permissions
+sudo mkdir -p /srv/nfs/shared              # make shared dir
+sudo chown nobody:nogroup /srv/nfs/shared     # set permissions
+sudo chmod 777 /srv/nfs/shared
+sudo nano /etc/exports
 
-echo "/srv/nfs_share <client_ip>(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports # export share
+/srv/nfs/shared 192.168.100.5(rw,sync,no_subtree_check)" 
+####| sudo tee -a /etc/exports # export share####
 sudo exportfs -ra                      # reload exports
 sudo systemctl restart nfs-kernel-server  # restart NFS
 
-sudo ufw allow from <client_ip> to any port nfs  # allow NFS
+sudo ufw allow from 192.168.100.5 to any port nfs  # allow NFS
 sudo ufw enable                        # ensure firewall is on
 
 # On client:
@@ -331,6 +334,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
