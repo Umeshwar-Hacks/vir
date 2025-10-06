@@ -169,6 +169,7 @@ nano filet.txt                         # make test file
 # Write python server
 nano https_server.py                   # edit https server
 # (Insert provided python code using http.server and ssl)
+import http.server,ssl
 server_add=('0.0.0.0',8443)
 httpd-http.server.HTTPServer(server_add,http.server.SimpleHTTPRequestHandler)
 httpd.socket=ssl.wrap_socket(httpd.socket,certfile="server.pem", server_side=True)
@@ -328,6 +329,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
