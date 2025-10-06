@@ -179,6 +179,7 @@ httpd.serve_forever()
 python3 https_server.py                # start https server
 
 # On client VM:
+wget-no-check-certificate https://192.168.56.101:8443/filet.txt
 curl -k https://<VM1_ip>:8443/filet.txt      # download test file
 
 # ========== Vexp5_148: SSH + NFS/Network File Shares ==========
@@ -329,6 +330,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
