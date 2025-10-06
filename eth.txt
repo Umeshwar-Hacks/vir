@@ -181,3 +181,112 @@ sudo systemctl enable vsftpd                    # enable on boot
 
 # Use Wireshark and Burp suite as described above for packet and web traffic analysis.
 
+# ========== Antivirus Detection Test (EICAR) ==========
+# Open Notepad in VM
+# Paste this EICAR string (single-line, no spaces):
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+# Save as: eicar.com   # Save as type: All Files
+# Observe AV response
+
+# ========== Network Disconnection/Reconnection ==========
+# Create turnoff.bat with:
+@echo off
+ipconfig /release
+
+# Create turnon.bat with:
+@echo off
+ipconfig /renew
+
+# Run before/after:      # Check IP changes
+ipconfig
+
+# ========== Popup Simulation ("Your text here") ==========
+# In Notepad, paste line and save as popup.vbs:
+X=MsgBox("Your text here", 0+64, "Title")
+# Double-click to run
+
+# ========== Popup Endless Loop (simulate annoyance) ==========
+# Save as popup_loop.vbs:
+do
+X=MsgBox("Virus Spreading", 0+48, "Virus Warning")
+loop
+# To kill: Ctrl+Shift+Esc, end wscript.exe
+
+# ========== Stop Persistent Malware ==========
+# Use:
+taskkill /IM wscript.exe /F      # from cmd, force end
+# Or Use: Restart, Safe Mode, PowerShell to kill process
+
+# ========== ProRat Trojan (Lab Simulation - Safe) ==========
+
+# --- Attacker VM (Windows 7) ---
+# Enable modern TLS in IE for downloads:
+# Control Panel > Internet Options > Advanced > Security > enable TLS 1.1 and 1.2 > Apply > OK
+
+# Disable Defender (temporarily for lab - ONLY in VM!):
+# Control Panel > Windows Defender > Settings > Real-time protection: uncheck
+# Control Panel > Windows Firewall > Turn off for both networks
+
+# Download ProRat from https://prorat.software.informer.com/download/
+# Extract (password: pro if prompted)
+
+# Run ProRat, Create → Create ProRat Server
+# Enter attacker VM's IP, example: 192.168.x.x
+# Set server port: 5110    # default or any unused port
+# Set password: 123456     # for server
+# Fill fake victim info, error messages (for social engineering)
+# Bind with image file ("dog.jpg") for demo (icon: photo)
+# Save server as "prorat_server_demo.exe"
+
+# --- Victim VM (Windows 7) ---
+# Antivirus enabled at first (then can disable for demo)
+# Ensure Windows Defender, Firewall are ON for initial tests
+
+# --- Share Trojan File (Safe, Controlled Lab) ---
+# [Both VMs shut down first]
+# Host: Make shared folder (e.g., "ExNo5" in VirtualBox settings, auto-mount both VMs)
+# Start each VM, Devices > Insert Guest Additions CD Image
+# Run VBoxWindowsAdditions.exe for Windows VMs, reboot
+
+# Enable Network Discovery: Control Panel > Network and Sharing > Advanced sharing > ON
+# On attacker: Move prorat_server_demo.exe to VBoxSvr shared
+# On victim: Copy file from VBoxSvr to Desktop
+
+# Run .exe on victim (simulate run as normal user/admin)
+# Observe Defender, user prompts, screenshot what happens
+
+# Successful run needs: Right-click → Run as administrator
+
+# --- Connect from Attacker ProRat to Victim ---
+# On victim: Get actual IP
+ipconfig                          # (note IPv4 address)
+
+# On attacker:
+# In ProRat: Connect to victim's IP, port 5110, password 123456
+
+# Try features:
+# PC Info, Message popups, Chat, Keylogger, Capture screenshot, File manager
+# For demo, do NOT activate "Give Damage", deletions, etc.
+
+# ========== Monitoring/Analysis on Victim ==========
+netstat -ano                      # inspect active connections, PID
+# Check for suspicious processes:
+Ctrl+Shift+Esc, Task Manager
+
+# Capture ProRat C2 with Wireshark (on right adapter)
+# Filter: tcp.port==5110
+
+# ========== Cleanup ==========
+# Remove malware traces:
+# On attacker: Uninstall ProRat
+# On victim: Delete trojan server
+# Restore VMs from original snapshots
+# Re-enable Defender, reset any disabled defenses
+
+# ========== Security Lessons ==========
+# Keep antivirus/Defender up to date
+# Block suspicious ports (5110 here)
+# Close unneeded firewall exceptions
+# Use app whitelisting, user training
+# Reset all network/VM customizations post-lab
+
