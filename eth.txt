@@ -13,6 +13,51 @@ sudo systemctl enable vsftpd            # enable on boot
 
 hydra -l <user> -P wordlist.txt <ip> ftp    # FTP brute force
 
+# ============== Ex no 2 ==================================
+# ===== WHOIS Domain Information =====
+whois nba.com                         # get domain/registrant info
+
+# ===== Wayback Machine (Browser) =====
+# Go to: https://archive.org/web/
+# Enter target domain, get historical data
+
+# ===== Site Info/Enumeration Tools =====
+# Use Netcraft (Browser): https://sitereport.netcraft.com/
+# Enter domain, get OS, subdomains
+
+# ===== Google Dorking/Footprinting =====
+site:leetcode.com filetype:pdf            # find PDF docs
+inurl:admin site:nba.com                  # admin URLs
+intitle:"index of" site:nba.com           # exposed directory listing
+site:nba.com inurl:login                  # login portals
+site:nba.com filetype:xls                  # find Excel docs
+cache:nba.com                             # get Google cache version
+link:nba.com                              # pages linking to site
+site:nba.com filetype:sql                  # find DB dumps
+intitle:password filetype:txt              # potential password files
+site:nba.com intext:confidential          # "confidential" docs
+site:nba.com -www                         # find subdomains
+filetype:backup site:nba.com              # backup files
+intitle:restricted site:nba.com           # restricted access pages
+
+# ===== DNS Enumeration and Lookup =====
+host nba.com                              # DNS host lookup
+dig nba.com                               # get A records
+dig nba.com NS                            # name server records
+dig nba.com MX                            # mail server records
+dig nba.com ANY                           # all DNS records
+dig -x 68.232.201.38                      # reverse DNS lookup
+dig AXFR nba.com ns1.nba.com              # zone transfer attempt (expect fail)
+
+dnsenum nba.com                           # DNS brute-force enum
+
+# ===== Notes =====
+# Use browser for archive.org, netcraft, or Google queries,
+# All 'site:' 'inurl:' 'intitle:' operators are Google search dorks,
+# Use dig/host/dnsenum for deep DNS checks.
+
+
+
 # ========== Sniffing (Ex No 7, Wireshark & Burp) ==========
 sudo apt install vsftpd                 # install ftp server
 sudo systemctl enable --now vsftpd      # enable/start ftp
@@ -135,3 +180,4 @@ sudo systemctl start vsftpd                     # start FTP
 sudo systemctl enable vsftpd                    # enable on boot
 
 # Use Wireshark and Burp suite as described above for packet and web traffic analysis.
+
