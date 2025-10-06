@@ -135,7 +135,10 @@ sudo chown ftpuser:ftpuser /home/ftpuser/uploads  # correct ownership
 
 sudo ufw allow ftp                     # allow FTP in firewall
 sudo ufw enable                        # enable firewall
-
+sudo ufw allow 20/tcp
+sudo ufw allow 21/tcp
+sudo ufw allow 40000:40100/tcp
+sudo ufw enable
 sudo systemctl reload vsftpd           # reload config
 sudo systemctl enable vsftpd           # auto start ftp
 sudo systemctl status vsftpd           # check status
@@ -321,6 +324,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
