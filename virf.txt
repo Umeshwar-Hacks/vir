@@ -194,8 +194,9 @@ ifconfig                               # get ip addresses
 
 # On one VM:
 ping <other_vm_ip>                     # test network
-
+nano file.txt
 # SCP (file transfer over SSH)
+scp file.txt kali@192.168.100.5:/home/kali/
 scp <src_file> user@<dest_ip>:<dest_folder>   # send file
 scp user@<src_ip>:<src_file> <local_folder>   # receive file
 
@@ -330,6 +331,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
