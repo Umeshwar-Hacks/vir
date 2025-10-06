@@ -203,32 +203,35 @@ scp user@<src_ip>:<src_file> <local_folder>   # receive file
 # --- NFS File Share ---
 sudo apt update                        # update
 sudo apt install nfs-kernel-server     # install NFS server
-sudo apt install nfs-common            # NFS client tools
+           
 
 sudo mkdir -p /srv/nfs/shared              # make shared dir
 sudo chown nobody:nogroup /srv/nfs/shared     # set permissions
 sudo chmod 777 /srv/nfs/shared
 sudo nano /etc/exports
 
-/srv/nfs/shared 192.168.100.5(rw,sync,no_subtree_check)" 
+/srv/nfs/shared 192.168.100.5(rw,sync,no_subtree_check) 
 ####| sudo tee -a /etc/exports # export share####
 sudo exportfs -ra                      # reload exports
 sudo systemctl restart nfs-kernel-server  # restart NFS
 
 sudo ufw allow from 192.168.100.5 to any port nfs  # allow NFS
-sudo ufw enable                        # ensure firewall is on
+##sudo ufw enable                        # ensure firewall is on
 
 # On client:
 sudo apt update                        # update
 sudo apt install nfs-common            # install NFS tools
 sudo mount <server_ip>:/srv/nfs_share <mount_dir> # mount export
+sudo mkdir -p /mnt/nfs/shared
+sudo mount 192.168.100.6:/srv/nfs/shared /mnt/nfs/shared
 
 # Test file copy:
-cp <file> <mount_dir>                  # copy to share
-ls <mount_dir>                         # list files
+cd /mnt/nfs/shared                 # copy to share
+nano test.txt                        # list files
+cat test.txt
 
-# Unmount after use:
-sudo umount <mount_dir>                # unmount export
+# On server:
+cat /srv/nfs/shared/test.txt               # unmount export
 
 ################################################################################
 
@@ -334,6 +337,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
