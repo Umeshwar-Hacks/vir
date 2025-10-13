@@ -184,6 +184,7 @@ curl -k https://<VM1_ip>:8443/filet.txt      # download test file
 
 # ========== Vexp5_148: SSH + NFS/Network File Shares ==========
 # --- SSH Transfer ---
+###Set One of VMs to NAT and other to Host-Only
 sudo apt update                        # update
 sudo apt install openssh-server        # install ssh server
 sudo systemctl enable ssh              # enable sshd
@@ -197,6 +198,7 @@ ping <other_vm_ip>                     # test network
 nano file.txt
 # SCP (file transfer over SSH)
 scp file.txt kali@192.168.100.5:/home/kali/
+scp file.txt vboxuser@192.168.56.104:/home/vboxuser/
 scp <src_file> user@<dest_ip>:<dest_folder>   # send file
 scp user@<src_ip>:<src_file> <local_folder>   # receive file
 
@@ -337,6 +339,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
