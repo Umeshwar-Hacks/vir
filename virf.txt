@@ -161,6 +161,9 @@ sudo apt install openssl -y            # install openssl
 
 mkdir ~/https_share                    # make share dir
 cd ~/https_share                       # move to share dir
+python3 -m http.server 8080
+wget http://<server_ip>:8080/httpshare.txt
+
 
 openssl req -new -x509 -keyout server.pem -out server.pem -days 365 -nodes  # self-signed cert
 
@@ -339,6 +342,7 @@ microstack.openstack server create \
 
 # Access Horizon Dashboard via https://<VM-IP>
 # Use username 'admin' and password from microstack.rc file
+
 
 
 
